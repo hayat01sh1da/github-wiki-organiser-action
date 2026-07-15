@@ -1,9 +1,7 @@
-name: Spreen Wiki Organiser
+name: GitHub Wiki Organiser
 description: >-
-  Organise (organize) a GitHub wiki: regenerate Home.md and _Sidebar.md grouped
-  by Owner/Category with English/Japanese labels, or export reports of the
-  pages whose owner or category is unknown. Powered by the spreen-wiki PyPI
-  package; commits and pushes wiki changes, with optional Slack notification.
+  Organise (organize) a GitHub wiki: regenerate Home.md/_Sidebar.md grouped by
+  Owner/Category and export unknown-page reports
 author: hayat01sh1da
 branding:
   icon: feather
