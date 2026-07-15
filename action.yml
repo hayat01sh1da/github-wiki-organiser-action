@@ -1,0 +1,147 @@
+name: Spreen Wiki Organiser
+description: >-
+  Organise (organize) a GitHub wiki: regenerate Home.md and _Sidebar.md grouped
+  by Owner/Category with English/Japanese labels, or export reports of the
+  pages whose owner or category is unknown. Powered by the spreen-wiki PyPI
+  package; commits and pushes wiki changes, with optional Slack notification.
+author: hayat01sh1da
+branding:
+  icon: feather
+  color: blue
+
+inputs:
+  command:
+    description: "Subcommand to run: update (Home + Sidebar), count-report or llm-export"
+    required: false
+    default: update
+  wiki-repository:
+    description: "Wiki repository to organise, as <owner>/<repo>.wiki"
+    required: false
+    default: ${{ github.repository }}.wiki
+  token:
+    description: >-
+      Token used to check out and push the wiki repository. The default
+      GITHUB_TOKEN works for the calling repository's own wiki when the job
+      grants `permissions: contents: write`; organising another repository's
+      wiki needs a PAT.
+    required: false
+    default: ${{ github.token }}
+  group-by:
+    description: "Grouping criteria: Owner or Category (CLI default: Owner)"
+    required: false
+    default: ''
+  language:
+    description: "Label language: English or Japanese (CLI default: English)"
+    required: false
+    default: ''
+  home-overflow:
+    description: "update only: split Home into per-namespace pages under wikis-by-owner/"
+    required: false
+    default: 'false'
+  template-dir:
+    description: "Directory of <group_by>/<language>.md Home templates, relative to the wiki root"
+    required: false
+    default: ''
+  output:
+    description: "count-report / llm-export only: export filename (relative to the wiki root)"
+    required: false
+    default: ''
+  push:
+    description: Commit and push the wiki when the run produced a diff
+    required: false
+    default: 'true'
+  commit-message:
+    description: Commit message used when pushing wiki changes
+    required: false
+    default: Organise wiki by Spreen Wiki Organiser
+  slack-webhook-url:
+    description: "Optional Slack Incoming Webhook URL; a notification is sent when changes were pushed"
+    required: false
+    default: ''
+
+outputs:
+  changed:
+    description: "'true' when the run produced wiki changes that were committed and pushed"
+    value: ${{ steps.commit.outputs.changed }}
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout the Wiki Repository
+      uses: actions/checkout@v7
+      with:
+        repository: ${{ inputs.wiki-repository }}
+        ref: master
+        token: ${{ inputs.token }}
+        path: spreen-wiki-workspace
+
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.x'
+
+    - name: Install spreen-wiki
+      shell: bash
+      env:
+        # Pinned so existing action tags keep their behaviour; bumped per action release.
+        SPREEN_WIKI_VERSION: 0.1.0
+      run: pip install --quiet "spreen-wiki==${SPREEN_WIKI_VERSION}"
+
+    - name: Run the Organiser
+      shell: bash
+      env:
+        COMMAND: ${{ inputs.command }}
+        WIKI_REPOSITORY: ${{ inputs.wiki-repository }}
+        GROUP_BY: ${{ inputs.group-by }}
+        LANGUAGE: ${{ inputs.language }}
+        HOME_OVERFLOW: ${{ inputs.home-overflow }}
+        TEMPLATE_DIR: ${{ inputs.template-dir }}
+        OUTPUT: ${{ inputs.output }}
+      run: |
+        set -euo pipefail
+        owner="${WIKI_REPOSITORY%%/*}"
+        repository="${WIKI_REPOSITORY#*/}"
+        repository="${repository%.wiki}"
+        args=("$COMMAND" --path "$GITHUB_WORKSPACE/spreen-wiki-workspace" --org "$owner" --repo "$repository")
+        if [ -n "$GROUP_BY" ]; then args+=(--group-by "$GROUP_BY"); fi
+        if [ -n "$LANGUAGE" ]; then args+=(--language "$LANGUAGE"); fi
+        if [ -n "$TEMPLATE_DIR" ]; then args+=(--template-dir "$GITHUB_WORKSPACE/spreen-wiki-workspace/$TEMPLATE_DIR"); fi
+        if [ -n "$OUTPUT" ]; then args+=(--output "$OUTPUT"); fi
+        if [ "$COMMAND" = 'update' ] && [ "$HOME_OVERFLOW" = 'true' ]; then args+=(--overflow); fi
+        spreen "${args[@]}"
+
+    - name: Commit and Push
+      id: commit
+      if: ${{ inputs.push == 'true' }}
+      shell: bash
+      env:
+        COMMIT_MESSAGE: ${{ inputs.commit-message }}
+      run: |
+        set -euo pipefail
+        cd "$GITHUB_WORKSPACE/spreen-wiki-workspace"
+        git config user.name 'github-actions[bot]'
+        git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+        git add -A
+        if git diff --cached --quiet; then
+          echo 'No wiki changes to push.'
+          echo 'changed=false' >> "$GITHUB_OUTPUT"
+        else
+          git commit -m "$COMMIT_MESSAGE"
+          git push origin master
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Slack Notification
+      if: ${{ inputs.slack-webhook-url != '' && steps.commit.outputs.changed == 'true' }}
+      shell: bash
+      env:
+        SLACK_WEBHOOK_URL: ${{ inputs.slack-webhook-url }}
+        WIKI_REPOSITORY: ${{ inputs.wiki-repository }}
+        COMMIT_MESSAGE: ${{ inputs.commit-message }}
+      run: |
+        set -euo pipefail
+        repository="${WIKI_REPOSITORY%.wiki}"
+        payload="$(jq -n \
+          --arg text "【${repository} Wiki Organiser Report】 ${COMMIT_MESSAGE} — https://github.com/${repository}/wiki" \
+          '{text: $text}')"
+        curl -fsS -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_WEBHOOK_URL" > /dev/null
