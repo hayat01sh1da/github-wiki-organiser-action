@@ -1,0 +1,48 @@
+name: Action - CI
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - action.yml
+      - .github/workflows/action--ci.yml
+  pull_request:
+    paths:
+      - action.yml
+      - .github/workflows/action--ci.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dry-run:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Dry-run update against the spreen-wiki wiki
+        uses: ./
+        with:
+          wiki-repository: hayat01sh1da/spreen-wiki.wiki
+          push: 'false'
+      - name: Show the diff the organiser produced
+        working-directory: spreen-wiki-workspace
+        run: |
+          set -euo pipefail
+          test -f Home.md
+          test -f _Sidebar.md
+          git status --porcelain
+          git diff --stat
+      - name: Dry-run count-report against the spreen-wiki wiki
+        uses: ./
+        with:
+          command: count-report
+          wiki-repository: hayat01sh1da/spreen-wiki.wiki
+          push: 'false'
+      - name: Show the report the organiser exported
+        working-directory: spreen-wiki-workspace
+        run: |
+          set -euo pipefail
+          cat unknown_wiki_count_list_by_namespace.txt
