@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-07-15
+
 ### 1. Added
 
 - Initial composite action **Spreen Wiki Organiser**: checks out the caller's wiki (`wiki-repository`, defaulting to the calling repository's own wiki), installs the pinned [`spreen-wiki`](https://pypi.org/project/spreen-wiki/) PyPI package (0.1.0), and runs the `spreen` CLI (`update` / `count-report` / `llm-export` selected via `command`).
