@@ -1,4 +1,4 @@
-# Spreen Wiki Organiser
+# GitHub Wiki Organiser
 
 [![Action - CI](https://github.com/hayat01sh1da/github-wiki-organiser-action/workflows/Action%20-%20CI/badge.svg)](https://github.com/hayat01sh1da/github-wiki-organiser-action/actions/workflows/action--ci.yml)
 
