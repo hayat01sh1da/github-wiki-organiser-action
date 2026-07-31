@@ -82,7 +82,7 @@ runs:
       shell: bash
       env:
         # Pinned so existing action tags keep their behaviour; bumped per action release.
-        SPREEN_WIKI_VERSION: 0.2.0
+        SPREEN_WIKI_VERSION: 0.2.1
       run: pip install --quiet "spreen-wiki==${SPREEN_WIKI_VERSION}"
 
     - name: Run the Organiser

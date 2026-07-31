@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### 1. Fixed
+
+- `README.md` described the action as running the `spreen` CLI.  
+  The executable was renamed to `wiki-organise` in `spreen-wiki` 0.3.0 (RubyGem) / 0.2.0 (PyPI), and `action.yml` has invoked the new name since the pin moved to 0.2.0 — only the prose was left behind, documenting a command that no longer exists.
+
+### 2. Changed
+
+- Bumped the pinned `spreen-wiki` version 0.2.0 → 0.2.1, picking up the fix for `wiki-organise --version` reporting `0.1.0`.  
+  The action does not invoke `--version`, so runtime behaviour is unchanged; the bump keeps the pin on the current release per the per-release pinning policy.
+
 ## [0.1.0] - 2026-07-15
 
 ### 1. Added
