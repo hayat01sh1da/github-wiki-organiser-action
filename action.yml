@@ -76,7 +76,7 @@ runs:
     - name: Setup Python
       uses: actions/setup-python@v6
       with:
-        python-version: '3.x'
+        python-version: 3.14.6
 
     - name: Install spreen-wiki
       shell: bash
@@ -106,7 +106,7 @@ runs:
         if [ -n "$TEMPLATE_DIR" ]; then args+=(--template-dir "$GITHUB_WORKSPACE/spreen-wiki-workspace/$TEMPLATE_DIR"); fi
         if [ -n "$OUTPUT" ]; then args+=(--output "$OUTPUT"); fi
         if [ "$COMMAND" = 'update' ] && [ "$HOME_OVERFLOW" = 'true' ]; then args+=(--overflow); fi
-        spreen "${args[@]}"
+        wiki-organise "${args[@]}"
 
     - name: Commit and Push
       id: commit
