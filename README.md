@@ -3,7 +3,7 @@
 [![Action - CI](https://github.com/hayat01sh1da/github-wiki-organiser-action/workflows/Action%20-%20CI/badge.svg)](https://github.com/hayat01sh1da/github-wiki-organiser-action/actions/workflows/action--ci.yml)
 
 Organise (organize) a GitHub wiki from a scheduled workflow: regenerate `Home.md` and `_Sidebar.md` grouped by the Owner/Category declared on the first line of each page (English and Japanese labels built in), or export reports of the pages whose owner or category is unknown.  
-This action is a thin adapter over the [`spreen-wiki`](https://pypi.org/project/spreen-wiki/) PyPI package (also published [as a RubyGem](https://rubygems.org/gems/spreen-wiki)): it checks out your wiki, runs the `spreen` CLI, commits and pushes when there is a diff, and optionally notifies Slack.
+This action is a thin adapter over the [`spreen-wiki`](https://pypi.org/project/spreen-wiki/) PyPI package (also published [as a RubyGem](https://rubygems.org/gems/spreen-wiki)): it checks out your wiki, runs the `wiki-organise` CLI, commits and pushes when there is a diff, and optionally notifies Slack.
 
 ## 1. Usage
 
