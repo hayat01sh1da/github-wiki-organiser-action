@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
-      - uses: hayat01sh1da/github-wiki-organiser-action@v0.1.0
+      - uses: hayat01sh1da/github-wiki-organiser-action@v0.1.2
         with:
           group-by: Owner
           language: English
@@ -63,7 +63,7 @@ Persistent settings, custom labels and additional languages go into a [`.spreen.
 
 ## 5. Versioning
 
-- Pin the exact tag (`@v0.1.0`) or a commit SHA for now; a floating major (`@v1`) arrives with `v1.0.0` after validation on a real wiki, and from then on pinning `@v1` receives fixes automatically.
+- Pin the exact tag (`@v0.1.2`) or a commit SHA for now; a floating major (`@v1`) arrives with `v1.0.0` after validation on a real wiki, and from then on pinning `@v1` receives fixes automatically.
 - Each action release pins an exact `spreen-wiki` package version internally, so existing tags keep their behaviour; package upgrades arrive via new action releases.
 
 ## 6. Development
