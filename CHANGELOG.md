@@ -4,7 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.2] - 2026-08-06
+
+### 1. Changed
+
+- Bumped the interpreter provisioned by `actions/setup-python` 3.14.6 -> 3.14.7, picking up the CPython patch release of 2026-08-05 — notably the `tarfile` extraction-filter bypass (`gh-151558`) and the `html.parser` / `xml.etree.ElementTree` quadratic-parsing denial-of-service fixes (`gh-153030`, `gh-152674`).
+- Bumped the pinned `spreen-wiki` version 0.2.1 -> 0.2.2, keeping the pin on the current release per the per-release pinning policy.
+  The packaged `wiki-organise` behaviour is unchanged, so consumer runs differ only in the interpreter.
+- `README.md` pins `@v0.1.2` in the usage example and the versioning-policy note; both still referenced `@v0.1.0` after the 0.1.1 release.
 
 ## [0.1.1] - 2026-07-31
 
